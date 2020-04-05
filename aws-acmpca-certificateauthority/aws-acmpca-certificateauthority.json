@@ -1,0 +1,195 @@
+{
+  "typeName": "AWS::ACMPCA::CertificateAuthority",
+  "description": "Private certificate authority.",
+  "sourceUrl": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ACMPCA.html",
+  "definitions": {
+    "Arn": {
+      "type": "string"
+    },
+    "Tag": {
+      "type": "object",
+      "properties": {
+        "Key": {
+          "type": "string"
+        },
+        "Value": {
+          "type": "string"
+        }
+      }
+    },
+    "Subject": {
+      "description": "Structure that contains X.500 distinguished name information for your CA.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Country": {
+          "type": "string"
+        },
+        "Organization": {
+          "type": "string"
+        },
+        "OrganizationalUnit": {
+          "type": "string"
+        },
+        "DistinguishedNameQualifier": {
+          "type": "string"
+        },
+        "State": {
+          "type": "string"
+        },
+        "CommonName": {
+          "type": "string"
+        },
+        "SerialNumber": {
+          "type": "string"
+        },
+        "Locality": {
+          "type": "string"
+        },
+        "Title": {
+          "type": "string"
+        },
+        "Surname": {
+          "type": "string"
+        },
+        "GivenName": {
+          "type": "string"
+        },
+        "Initials": {
+          "type": "string"
+        },
+        "Pseudonym": {
+          "type": "string"
+        },
+        "GenerationQualifier": {
+          "type": "string"
+        }
+      }
+    },
+    "CrlConfiguration": {
+      "description": "Your certificate authority can create and maintain a certificate revocation list (CRL). A CRL contains information about certificates that have been revoked.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Enabled": {
+          "type": "boolean"
+        },
+        "ExpirationInDays": {
+          "type": "integer"
+        },
+        "CustomCname": {
+          "type": "string"
+        },
+        "S3BucketName": {
+          "type": "string"
+        }
+      }
+    },
+    "RevocationConfiguration": {
+      "description": "Certificate Authority revocation information.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "CrlConfiguration": {
+          "$ref": "#/definitions/CrlConfiguration"
+        }
+      }
+    }
+  },
+  "properties": {
+    "Arn": {
+      "description": "The Amazon Resource Name (ARN) of the certificate authority.",
+      "$ref": "#/definitions/Arn"
+    },
+    "Type": {
+      "description": "The type of the certificate authority.",
+      "type": "string"
+    },
+    "KeyAlgorithm": {
+      "description": "Public key algorithm and size, in bits, of the key pair that your CA creates when it issues a certificate.",
+      "type": "string"
+    },
+    "SigningAlgorithm": {
+      "description": "Algorithm your CA uses to sign certificate requests.",
+      "type": "string"
+    },
+    "Subject": {
+      "description": "Structure that contains X.500 distinguished name information for your CA.",
+      "$ref": "#/definitions/Subject"
+    },
+    "RevocationConfiguration": {
+      "description": "Certificate revocation information used by the CreateCertificateAuthority and UpdateCertificateAuthority actions.",
+      "$ref": "#/definitions/RevocationConfiguration"
+    },
+    "Tags": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Tag"
+      }
+    },
+    "CertificateSigningRequest": {
+      "description": "The base64 PEM-encoded certificate signing request (CSR) for your certificate authority certificate.",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "Type",
+    "KeyAlgorithm",
+    "SigningAlgorithm",
+    "Subject"
+  ],
+  "readOnlyProperties": [
+    "/properties/Arn",
+    "/properties/CertificateSigningRequest"
+  ],
+  "writeOnlyProperties": [
+    "/properties/Subject"
+  ],
+  "createOnlyProperties": [
+    "/properties/Type",
+    "/properties/KeyAlgorithm",
+    "/properties/SigningAlgorithm",
+    "/properties/Subject"
+  ],
+  "primaryIdentifier": [
+    "/properties/Arn"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "acm-pca:CreateCertificateAuthority",
+        "acm-pca:DescribeCertificateAuthority",
+        "acm-pca:GetCertificateAuthorityCsr"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "acm-pca:DescribeCertificateAuthority",
+        "acm-pca:GetCertificateAuthorityCsr",
+        "acm-pca:ListTags"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "acm-pca:ListTags",
+        "acm-pca:TagCertificateAuthority",
+        "acm-pca:UntagCertificateAuthority",
+        "acm-pca:UpdateCertificateAuthority"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "acm-pca:DeleteCertificateAuthority"
+      ]
+    },
+    "list": {
+      "permissions": [
+        "acm-pca:DescribeCertificateAuthority",
+        "acm-pca:GetCertificateAuthorityCsr",
+        "acm-pca:ListCertificateAuthorities",
+        "acm-pca:ListTags"
+      ]
+    }
+  }
+}

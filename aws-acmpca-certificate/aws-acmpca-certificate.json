@@ -1,0 +1,101 @@
+{
+  "typeName": "AWS::ACMPCA::Certificate",
+  "description": "A certificate issued via a private certificate authority",
+  "sourceUrl": "https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ACMPCA.html",
+  "definitions": {
+    "Arn": {
+      "type": "string"
+    },
+    "Validity": {
+      "description": "Validity for a certificate.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Value": {
+          "type": "integer"
+        },
+        "Type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "Value",
+        "Type"
+      ]
+    }
+  },
+  "properties": {
+    "CertificateAuthorityArn": {
+      "description": "The Amazon Resource Name (ARN) for the private CA to issue the certificate.",
+      "$ref": "#/definitions/Arn"
+    },
+    "CertificateSigningRequest": {
+      "description": "The certificate signing request (CSR) for the Certificate.",
+      "type": "string",
+      "minLength": 1
+    },
+    "SigningAlgorithm": {
+      "description": "The name of the algorithm that will be used to sign the Certificate.",
+      "type": "string"
+    },
+    "TemplateArn": {
+      "description": "Specifies a custom configuration template to use when issuing a certificate. If this parameter is not provided, ACM Private CA defaults to the EndEntityCertificate/V1 template.",
+      "$ref": "#/definitions/Arn"
+    },
+    "Validity": {
+      "description": "The time that the Certificate will be valid.",
+      "$ref": "#/definitions/Validity"
+    },
+    "Certificate": {
+      "description": "The issued certificate in base 64 PEM-encoded format.",
+      "type": "string"
+    },
+    "Arn": {
+      "description": "The ARN of the issued certificate.",
+      "$ref": "#/definitions/Arn"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "CertificateAuthorityArn",
+    "CertificateSigningRequest",
+    "SigningAlgorithm",
+    "Validity"
+  ],
+  "readOnlyProperties": [
+    "/properties/Arn",
+    "/properties/Certificate"
+  ],
+  "createOnlyProperties": [
+    "/properties/CertificateAuthorityArn",
+    "/properties/CertificateSigningRequest",
+    "/properties/SigningAlgorithm",
+    "/properties/TemplateArn",
+    "/properties/Validity"
+  ],
+  "writeOnlyProperties": [
+    "/properties/CertificateSigningRequest"
+  ],
+  "primaryIdentifier": [
+    "/properties/Arn",
+    "/properties/CertificateAuthorityArn"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "acm-pca:IssueCertificate",
+        "acm-pca:GetCertificate"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "acm-pca:GetCertificate"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "acm-pca:GetCertificate"
+      ]
+    }
+  }
+}
