@@ -1,0 +1,15 @@
+{
+    "typeName": "AWS::ACMPCA::CertificateAuthorityActivation",
+    "language": "java",
+    "runtime": "java8",
+    "entrypoint": "software.amazon.acmpca.certificateauthorityactivation.HandlerWrapper::handleRequest",
+    "testEntrypoint": "software.amazon.acmpca.certificateauthorityactivation.HandlerWrapper::testEntrypoint",
+    "settings": {
+        "namespace": [
+            "software",
+            "amazon",
+            "acmpca",
+            "certificateauthorityactivation"
+        ]
+    }
+}
