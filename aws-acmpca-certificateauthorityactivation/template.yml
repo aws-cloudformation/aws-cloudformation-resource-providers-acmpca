@@ -20,3 +20,4 @@ Resources:
       Handler: software.amazon.acmpca.certificateauthorityactivation.HandlerWrapper::testEntrypoint
       Runtime: java8
       CodeUri: ./target/aws-acmpca-certificateauthorityactivation-handler-1.0-SNAPSHOT.jar
+

@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
+import java.util.function.Function;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -29,6 +31,7 @@ import lombok.val;
 public final class ListHandlerTest extends TestBase {
 
     @Test
+    @SuppressWarnings("unchecked")
     public void handleRequest__Success() {
         val handler = new ListHandler();
 
@@ -46,15 +49,48 @@ public final class ListHandlerTest extends TestBase {
 
         doReturn(new ListCertificateAuthoritiesResult()
             .withCertificateAuthorities(certificateAuthority))
-            .when(proxy).injectCredentialsAndInvoke(any(ListCertificateAuthoritiesRequest.class), any());
+            .when(proxy).injectCredentialsAndInvoke(any(ListCertificateAuthoritiesRequest.class), any(Function.class));
 
         doReturn(new DescribeCertificateAuthorityResult()
             .withCertificateAuthority(certificateAuthority))
-            .when(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any());
+            .when(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any(Function.class));
 
         doReturn(new GetCertificateAuthorityCsrResult()
             .withCsr(csr))
-            .when(proxy).injectCredentialsAndInvoke(any(GetCertificateAuthorityCsrRequest.class), any());
+            .when(proxy).injectCredentialsAndInvoke(any(GetCertificateAuthorityCsrRequest.class), any(Function.class));
+
+        val response = handler.handleRequest(proxy, request, null, log);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
+        assertThat(response.getCallbackContext()).isNull();
+        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
+        assertThat(response.getResourceModel()).isNull();
+        assertThat(response.getResourceModels()).isNotNull();
+        assertThat(response.getMessage()).isNull();
+        assertThat(response.getErrorCode()).isNull();
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void handleRequest__Success__DeletedCA() {
+        val handler = new ListHandler();
+
+        val request = ResourceHandlerRequest.<ResourceModel>builder()
+            .build();
+
+        val certificateAuthority = new CertificateAuthority()
+            .withArn(certificateAuthorityArn)
+            .withType(CertificateAuthorityType.ROOT)
+            .withCertificateAuthorityConfiguration(new CertificateAuthorityConfiguration()
+                .withSubject(new ASN1Subject())
+                .withKeyAlgorithm(keyAlgorithm)
+                .withSigningAlgorithm(signingAlgorithm))
+            .withStatus(CertificateAuthorityStatus.DELETED);
+
+        doReturn(new ListCertificateAuthoritiesResult()
+            .withCertificateAuthorities(certificateAuthority))
+            .when(proxy).injectCredentialsAndInvoke(any(ListCertificateAuthoritiesRequest.class), any(Function.class));
 
         val response = handler.handleRequest(proxy, request, null, log);
 

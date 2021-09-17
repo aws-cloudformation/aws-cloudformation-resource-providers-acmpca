@@ -37,8 +37,6 @@ public final class CreateHandlerTest extends TestBase {
         assertThat(response.getCallbackContext()).isNull();
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
         assertThat(response.getResourceModel().getCertificateAuthorityArn()).isEqualTo(certificateAuthorityArn);
-        assertThat(response.getResourceModel().getCertificateChain()).isNull();
-        assertThat(response.getResourceModel().getCertificate()).isNull();
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();

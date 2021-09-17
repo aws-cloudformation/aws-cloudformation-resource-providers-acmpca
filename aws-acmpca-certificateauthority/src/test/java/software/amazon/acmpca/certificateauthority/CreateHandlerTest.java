@@ -6,6 +6,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import java.util.function.Function;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -33,6 +35,7 @@ import lombok.val;
 public final class CreateHandlerTest extends TestBase {
 
     @Test
+    @SuppressWarnings("unchecked")
     public void handleRequest__CreateCertificateAuthority() {
         val handler = new CreateHandler();
 
@@ -64,11 +67,11 @@ public final class CreateHandlerTest extends TestBase {
 
         doReturn(new CreateCertificateAuthorityResult()
             .withCertificateAuthorityArn(certificateAuthorityArn))
-            .when(proxy).injectCredentialsAndInvoke(any(CreateCertificateAuthorityRequest.class), any());
+            .when(proxy).injectCredentialsAndInvoke(any(CreateCertificateAuthorityRequest.class), any(Function.class));
 
         doReturn(new DescribeCertificateAuthorityResult()
             .withCertificateAuthority(certificateAuthority))
-            .when(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any());
+            .when(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any(Function.class));
 
         val response = handler.handleRequest(proxy, request, null, log);
 
@@ -81,11 +84,12 @@ public final class CreateHandlerTest extends TestBase {
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
 
-        verify(proxy).injectCredentialsAndInvoke(any(CreateCertificateAuthorityRequest.class), any());
-        verify(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any());
+        verify(proxy).injectCredentialsAndInvoke(any(CreateCertificateAuthorityRequest.class), any(Function.class));
+        verify(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any(Function.class));
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void handleRequest__GetCreatedCertificateAuthority() {
         val handler = new CreateHandler();
 
@@ -118,11 +122,11 @@ public final class CreateHandlerTest extends TestBase {
 
         doReturn(new DescribeCertificateAuthorityResult()
             .withCertificateAuthority(certificateAuthority))
-            .when(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any());
+            .when(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any(Function.class));
 
         doReturn(new GetCertificateAuthorityCsrResult()
             .withCsr(csr))
-            .when(proxy).injectCredentialsAndInvoke(any(GetCertificateAuthorityCsrRequest.class), any());
+            .when(proxy).injectCredentialsAndInvoke(any(GetCertificateAuthorityCsrRequest.class), any(Function.class));
 
         val response = handler.handleRequest(proxy, request, null, log);
 
@@ -135,12 +139,13 @@ public final class CreateHandlerTest extends TestBase {
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
 
-        verify(proxy, never()).injectCredentialsAndInvoke(any(CreateCertificateAuthorityRequest.class), any());
-        verify(proxy).injectCredentialsAndInvoke(any(GetCertificateAuthorityCsrRequest.class), any());
-        verify(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any());
+        verify(proxy, never()).injectCredentialsAndInvoke(any(CreateCertificateAuthorityRequest.class), any(Function.class));
+        verify(proxy).injectCredentialsAndInvoke(any(GetCertificateAuthorityCsrRequest.class), any(Function.class));
+        verify(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any(Function.class));
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void getCreatedCertificateAuthority__FAILED() {
         val handler = new CreateHandler();
 
@@ -173,7 +178,7 @@ public final class CreateHandlerTest extends TestBase {
 
         doReturn(new DescribeCertificateAuthorityResult()
             .withCertificateAuthority(certificateAuthority))
-            .when(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any());
+            .when(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any(Function.class));
 
         val response = handler.handleRequest(proxy, request, null, log);
 
@@ -185,8 +190,8 @@ public final class CreateHandlerTest extends TestBase {
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getErrorCode()).isEqualTo(HandlerErrorCode.ServiceInternalError);
 
-        verify(proxy, never()).injectCredentialsAndInvoke(any(CreateCertificateAuthorityRequest.class), any());
-        verify(proxy, never()).injectCredentialsAndInvoke(any(GetCertificateAuthorityCsrRequest.class), any());
-        verify(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any());
+        verify(proxy, never()).injectCredentialsAndInvoke(any(CreateCertificateAuthorityRequest.class), any(Function.class));
+        verify(proxy, never()).injectCredentialsAndInvoke(any(GetCertificateAuthorityCsrRequest.class), any(Function.class));
+        verify(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any(Function.class));
     }
 }

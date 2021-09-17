@@ -28,7 +28,6 @@ public final class ReadHandler extends BaseHandler<CallbackContext> {
         log.log("Read handler being invoked for Certificate Arn: " + model.getArn());
 
         readCertificate(model);
-        model.setCertificateSigningRequest(null);
 
         return ProgressEvent.defaultSuccessHandler(model);
     }

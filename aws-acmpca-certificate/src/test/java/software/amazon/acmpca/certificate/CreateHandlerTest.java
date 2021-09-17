@@ -7,6 +7,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 
+import java.util.function.Function;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,9 +25,10 @@ import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import lombok.val;
 
 @ExtendWith(MockitoExtension.class)
-public final class CreateHandlerTest extends TestBase{
+public final class CreateHandlerTest extends TestBase {
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testHandleRequest__SuccessfulCreate() {
         val handler = new CreateHandler();
 
@@ -42,11 +45,11 @@ public final class CreateHandlerTest extends TestBase{
             .build();
 
         doReturn(new IssueCertificateResult().withCertificateArn(certificateArn))
-            .when(proxy).injectCredentialsAndInvoke(any(IssueCertificateRequest.class), any());
+            .when(proxy).injectCredentialsAndInvoke(any(IssueCertificateRequest.class), any(Function.class));
 
         doReturn(new GetCertificateResult().withCertificate(certificate)
             .withCertificateChain(certificateChain))
-            .when(proxy).injectCredentialsAndInvoke(any(GetCertificateRequest.class), any());
+            .when(proxy).injectCredentialsAndInvoke(any(GetCertificateRequest.class), any(Function.class));
 
         val response = handler.handleRequest(proxy, request, null, log);
 
@@ -64,6 +67,7 @@ public final class CreateHandlerTest extends TestBase{
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testHandleRequest__NoSuccess__RuntimeExceptionThrown() {
         val handler = new CreateHandler();
 
@@ -80,7 +84,7 @@ public final class CreateHandlerTest extends TestBase{
             .build();
 
         doThrow(new RuntimeException()).when(proxy)
-            .injectCredentialsAndInvoke(any(IssueCertificateRequest.class), any());
+            .injectCredentialsAndInvoke(any(IssueCertificateRequest.class), any(Function.class));
 
         assertThrows(RuntimeException.class, () -> handler.handleRequest(proxy, request, null, log));
         assertNull(model.getCertificate());
@@ -88,6 +92,7 @@ public final class CreateHandlerTest extends TestBase{
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testHandleRequest__SkippingIssueCertificate__InProgress() {
         val handler = new CreateHandler();
 
@@ -105,7 +110,7 @@ public final class CreateHandlerTest extends TestBase{
             .build();
 
         doThrow(new RequestInProgressException("IN_PROGRESS")).when(proxy)
-            .injectCredentialsAndInvoke(any(GetCertificateRequest.class), any());
+            .injectCredentialsAndInvoke(any(GetCertificateRequest.class), any(Function.class));
 
         val response = handler.handleRequest(proxy, request, null, log);
 

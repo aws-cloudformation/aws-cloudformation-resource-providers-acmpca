@@ -1,11 +1,17 @@
 package software.amazon.acmpca.certificateauthority;
 
+import java.util.Objects;
+
+import com.amazonaws.services.acmpca.model.CertificateAuthorityStatus;
 import com.amazonaws.services.acmpca.model.ResourceNotFoundException;
 
+import software.amazon.awssdk.awscore.exception.AwsErrorDetails;
+import software.amazon.awssdk.awscore.exception.AwsServiceException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+import software.amazon.cloudformation.proxy.HandlerErrorCode;
 
 import lombok.val;
 
@@ -29,6 +35,17 @@ public final class DeleteHandler extends BaseHandler<CallbackContext> {
         log.log("Delete handler being invoked for Arn: " + model.getArn());
 
         try {
+            val certificateAuthority = acmPcaClient.describeCertificateAuthority(model);
+            val status = certificateAuthority.getStatus();
+            if (Objects.equals(status, CertificateAuthorityStatus.DELETED.name())) {
+                val emptyResponseException = AwsServiceException.builder()
+                    .awsErrorDetails(AwsErrorDetails.builder()
+                        .errorCode("NotFound")
+                        .errorMessage("Not Found")
+                        .build())
+                    .build();
+                return ProgressEvent.defaultFailureHandler(emptyResponseException, HandlerErrorCode.NotFound);
+            }
             acmPcaClient.deleteCertificateAuthority(model);
         } catch (ResourceNotFoundException ex) {
             log.log("Certificate authority was likely already deleted. Ignoring: " + ex);

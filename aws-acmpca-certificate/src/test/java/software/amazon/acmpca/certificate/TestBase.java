@@ -17,7 +17,7 @@ public abstract class TestBase {
 
     protected static final Validity validity = Validity.builder()
         .type(ValidityPeriodType.YEARS.name())
-        .value(10)
+        .value(10.0)
         .build();
 
     protected static final String certificateArn = "arn:aws:acm-pca:region:account:certificate-authority/uuid/certificate/uuid";
