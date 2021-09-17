@@ -4,7 +4,7 @@
 
 # Maven outputs
 .classpath
-
+.factorypath
 # IntelliJ
 *.iml
 .idea
