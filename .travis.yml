@@ -1,0 +1,18 @@
+language: java
+dist: bionic
+jdk: openjdk8
+env:
+  global:
+    - PYENV_VERSION=3.7
+    - AWS_REGION="us-east-1"
+    - AWS_DEFAULT_REGION=$AWS_REGION
+install:
+  - pip3 install --user pre-commit cloudformation-cli-java-plugin
+script:
+  - pre-commit run --all-files --verbose
+  - mvn clean verify --no-transfer-progress
+after_failure:
+  - cat "$TRAVIS_BUILD_DIR/aws-acmpca-certificate/rpdk.log"
+  - cat "$TRAVIS_BUILD_DIR/aws-acmpca-certificateauthority/rpdk.log"
+  - cat "$TRAVIS_BUILD_DIR/aws-acmpca-certificateauthorityactivation/rpdk.log"
+  - cat "$TRAVIS_BUILD_DIR/aws-acmpca-permission/rpdk.log"
