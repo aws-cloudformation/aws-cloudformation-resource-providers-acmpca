@@ -1,0 +1,9 @@
+{
+  "CertificateAuthorityArn": "{{PermissionResourceContractTestCertificateAuthorityArn}}",
+  "Principal": "acm.amazonaws.com",
+  "Actions": [
+    "IssueCertificate",
+    "GetCertificate",
+    "ListPermissions"
+  ]
+}

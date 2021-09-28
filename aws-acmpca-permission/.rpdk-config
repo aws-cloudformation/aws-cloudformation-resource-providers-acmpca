@@ -1,0 +1,18 @@
+{
+    "artifact_type": "RESOURCE",
+    "typeName": "AWS::ACMPCA::Permission",
+    "language": "java",
+    "runtime": "java8",
+    "entrypoint": "software.amazon.acmpca.permission.HandlerWrapper::handleRequest",
+    "testEntrypoint": "software.amazon.acmpca.permission.HandlerWrapper::testEntrypoint",
+    "settings": {
+        "namespace": [
+            "software",
+            "amazon",
+            "acmpca",
+            "permission"
+        ],
+        "protocolVersion": "2.0.0"
+    },
+    "executableEntrypoint": "software.amazon.acmpca.permission.HandlerWrapperExecutable"
+}
