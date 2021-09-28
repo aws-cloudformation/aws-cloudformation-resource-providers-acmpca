@@ -47,7 +47,6 @@ public final class CreateHandler extends BaseHandler<CallbackContext> {
 
         val certificateAuthorityArn = acmPcaClient.createCertificateAuthority(model);
         model.setArn(certificateAuthorityArn);
-        model.setSubject(null);
 
         log.log("Certificate Authority Arn received: " + certificateAuthorityArn);
 

@@ -1,5 +1,7 @@
 package software.amazon.acmpca.certificateauthority;
 
+import com.amazonaws.services.acmpca.model.CertificateAuthorityStatus;
+
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -24,6 +26,7 @@ public final class ListHandler extends BaseHandler<CallbackContext> {
         this.acmPcaClient = new AcmPcaClient(proxy);
 
         val models = acmPcaClient.listCertificateAuthorities().stream()
+            .filter(certificateAuthority -> !certificateAuthority.getStatus().equals(CertificateAuthorityStatus.DELETED.name()))
             .map(certificateAuthority -> ResourceModel.builder()
                 .arn(certificateAuthority.getArn())
                 .build())

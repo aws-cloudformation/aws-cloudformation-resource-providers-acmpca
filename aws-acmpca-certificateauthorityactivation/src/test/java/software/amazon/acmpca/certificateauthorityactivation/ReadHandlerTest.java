@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 
+import java.util.function.Function;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,6 +22,7 @@ import lombok.val;
 public final class ReadHandlerTest extends TestBase {
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testHandleRequest__Success() {
         val handler = new ReadHandler();
 
@@ -34,7 +37,7 @@ public final class ReadHandlerTest extends TestBase {
         doReturn(new GetCertificateAuthorityCertificateResult()
             .withCertificate(certificate)
             .withCertificateChain(certificateChain))
-            .when(proxy).injectCredentialsAndInvoke(any(GetCertificateAuthorityCertificateRequest.class), any());
+            .when(proxy).injectCredentialsAndInvoke(any(GetCertificateAuthorityCertificateRequest.class), any(Function.class));
 
         val response = handler.handleRequest(proxy, request, null, log);
 

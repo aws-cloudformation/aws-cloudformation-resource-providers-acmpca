@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 
+import java.util.function.Function;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -48,6 +50,7 @@ public final class DeleteHandlerTest extends TestBase {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testHandleRequest__Success__InvalidStateException() {
         val handler = new DeleteHandler();
 
@@ -63,7 +66,7 @@ public final class DeleteHandlerTest extends TestBase {
             .build();
 
         doThrow(InvalidStateException.class)
-            .when(proxy).injectCredentialsAndInvoke(any(UpdateCertificateAuthorityRequest.class), any());
+            .when(proxy).injectCredentialsAndInvoke(any(UpdateCertificateAuthorityRequest.class), any(Function.class));
 
         val response = handler.handleRequest(proxy, request, null, log);
 

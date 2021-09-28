@@ -27,9 +27,6 @@ public final class UpdateHandler extends BaseHandler<CallbackContext> {
         updateCertificateAuthorityChain(model);
         acmPcaClient.setCompleteCertificateChain(model);
 
-        model.setCertificate(null);
-        model.setCertificateChain(null);
-
         return ProgressEvent.defaultSuccessHandler(model);
     }
 

@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doReturn;
 
+import java.util.function.Function;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,6 +22,7 @@ import lombok.val;
 public final class ReadHandlerTest extends TestBase {
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testHandleRequest__SuccessfulRead() {
         val handler = new ReadHandler();
 
@@ -39,7 +42,7 @@ public final class ReadHandlerTest extends TestBase {
 
         doReturn(new GetCertificateResult().withCertificate(certificate)
             .withCertificateChain(certificateChain))
-            .when(proxy).injectCredentialsAndInvoke(any(GetCertificateRequest.class), any());
+            .when(proxy).injectCredentialsAndInvoke(any(GetCertificateRequest.class), any(Function.class));
 
         val response = handler.handleRequest(proxy, request, null, log);
 
@@ -57,6 +60,7 @@ public final class ReadHandlerTest extends TestBase {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testHandleRequest__ReadingUpdatedCertificateChain() {
         val handler = new ReadHandler();
         val newChain = "new-chain";
@@ -75,7 +79,7 @@ public final class ReadHandlerTest extends TestBase {
             .build();
 
         doReturn(new GetCertificateResult().withCertificate(certificate).withCertificateChain(newChain))
-            .when(proxy).injectCredentialsAndInvoke(any(GetCertificateRequest.class), any());
+            .when(proxy).injectCredentialsAndInvoke(any(GetCertificateRequest.class), any(Function.class));
 
         val response = handler.handleRequest(proxy, request, null, log);
 

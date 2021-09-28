@@ -4,10 +4,13 @@ import java.util.HashSet;
 
 import com.amazonaws.services.acmpca.model.Tag;
 
+import com.amazonaws.services.acmpca.model.InvalidStateException;
+
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+import software.amazon.cloudformation.proxy.HandlerErrorCode;
 
 import lombok.val;
 
@@ -30,11 +33,13 @@ public final class UpdateHandler extends BaseHandler<CallbackContext> {
 
         log.log("Update handler being invoked for Arn: " + model.getArn());
 
-        acmPcaClient.updateCertificateAuthorityRevocationConfiguration(model);
-        updateTags(model);
-        model.setSubject(null);
-
-        return ProgressEvent.defaultSuccessHandler(model);
+        try {
+            acmPcaClient.updateCertificateAuthorityRevocationConfiguration(model);
+            updateTags(model);
+            return ProgressEvent.defaultSuccessHandler(model);
+        } catch (InvalidStateException e) {
+            return ProgressEvent.defaultFailureHandler(e, HandlerErrorCode.NotFound);
+        }
     }
 
     private void updateTags(final ResourceModel model) {
