@@ -79,7 +79,7 @@ public final class AcmPcaClient {
     @VisibleForTesting
     String getCompleteCertificateChain(final String certificateChain, final String certificate) {
         return Optional.ofNullable(certificateChain)
-            .map(chain -> chain + "\n" + certificate)
+            .map(chain -> certificate + "\n" + chain)
             .orElse(certificate);
     }
 

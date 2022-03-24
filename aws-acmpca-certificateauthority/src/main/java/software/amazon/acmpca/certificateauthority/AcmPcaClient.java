@@ -8,7 +8,10 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.dozer.DozerBeanMapper;
+import com.github.dozermapper.core.DozerBeanMapperBuilder;
+import com.github.dozermapper.core.DozerBeanMapper;
+import com.github.dozermapper.core.Mapper;
+import com.github.dozermapper.core.loader.api.BeanMappingBuilder;
 
 import com.amazonaws.services.acmpca.AWSACMPCA;
 import com.amazonaws.services.acmpca.AWSACMPCAClientBuilder;
@@ -24,6 +27,7 @@ import com.amazonaws.services.acmpca.model.GetCertificateAuthorityCsrRequest;
 import com.amazonaws.services.acmpca.model.ListCertificateAuthoritiesRequest;
 import com.amazonaws.services.acmpca.model.ListCertificateAuthoritiesResult;
 import com.amazonaws.services.acmpca.model.ListTagsRequest;
+import com.amazonaws.services.acmpca.model.OcspConfiguration;
 import com.amazonaws.services.acmpca.model.RevocationConfiguration;
 import com.amazonaws.services.acmpca.model.Tag;
 import com.amazonaws.services.acmpca.model.TagCertificateAuthorityRequest;
@@ -34,15 +38,33 @@ import com.google.common.annotations.VisibleForTesting;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.val;
 
 @AllArgsConstructor
 public final class AcmPcaClient {
 
-    private static final AWSACMPCA pcaClient = AWSACMPCAClientBuilder.defaultClient();
-    private static final DozerBeanMapper mapper = new DozerBeanMapper();
+    private static final AWSACMPCA pcaClient;
+    @Getter private static final Mapper mapper;
 
-    private AmazonWebServicesClientProxy clientProxy;
+    private final AmazonWebServicesClientProxy clientProxy;
+
+    static {
+        pcaClient = AWSACMPCAClientBuilder.defaultClient();
+        val csrExtensionBeanMappingBuilder = new BeanMappingBuilder() {
+            @Override
+            protected void configure() {
+                mapping(type(CsrExtensions.class).accessible(true),
+                        type(com.amazonaws.services.acmpca.model.CsrExtensions.class).accessible())
+                        .fields("keyUsage", "keyUsage")
+                        .fields("subjectInformationAccess", "subjectInformationAccess");
+            }
+        };
+
+        mapper = DozerBeanMapperBuilder.create()
+                .withMappingBuilder(csrExtensionBeanMappingBuilder)
+                .build();
+    }
 
     public String createCertificateAuthority(final ResourceModel model) {
         val subject = mapper.map(model.getSubject(), ASN1Subject.class);
@@ -54,9 +76,16 @@ public final class AcmPcaClient {
             .withSigningAlgorithm(model.getSigningAlgorithm())
             .withSubject(subject);
 
+        val modelCsrExtensions = model.getCsrExtensions();
+        if (Objects.nonNull(modelCsrExtensions)) {
+            val csrExtensions = mapper.map(modelCsrExtensions,  com.amazonaws.services.acmpca.model.CsrExtensions.class);
+            certificateAuthorityConfiguration.setCsrExtensions(csrExtensions);
+        }
+
         val createRequest = new CreateCertificateAuthorityRequest()
             .withCertificateAuthorityType(model.getType())
             .withCertificateAuthorityConfiguration(certificateAuthorityConfiguration)
+            .withKeyStorageSecurityStandard(model.getKeyStorageSecurityStandard())
             .withIdempotencyToken(UUID.randomUUID().toString());
 
         if (!isRevocationConfigurationEmpty(model)) {
@@ -78,8 +107,19 @@ public final class AcmPcaClient {
         val revocationConfiguration = isRevocationConfigurationEmpty(model) ?
             new RevocationConfiguration()
                 .withCrlConfiguration(new CrlConfiguration()
-                    .withEnabled(false)) :
+                    .withEnabled(false))
+                .withOcspConfiguration(new OcspConfiguration()
+                    .withEnabled(false)):
             mapper.map(model.getRevocationConfiguration(), RevocationConfiguration.class);
+
+
+        if (isOcspConfigurationEmpty(model)) {
+            revocationConfiguration.setOcspConfiguration(new OcspConfiguration().withEnabled(false));
+        }
+
+        if (isCrlConfigurationEmpty(model)) {
+            revocationConfiguration.setCrlConfiguration(new CrlConfiguration().withEnabled(false));
+        }
 
         val updateRequest = new UpdateCertificateAuthorityRequest()
             .withCertificateAuthorityArn(certificateAuthorityArn)
@@ -103,7 +143,7 @@ public final class AcmPcaClient {
         ListCertificateAuthoritiesResult listResult = clientProxy.injectCredentialsAndInvoke(listRequest, pcaClient::listCertificateAuthorities);
 
         String nextToken = listResult.getNextToken();
-        val resultList = new ArrayList<CertificateAuthority>(listResult.getCertificateAuthorities());
+        val resultList = new ArrayList<>(listResult.getCertificateAuthorities());
 
         while (Objects.nonNull(nextToken)) {
             listRequest = new ListCertificateAuthoritiesRequest()
@@ -181,9 +221,14 @@ public final class AcmPcaClient {
 
         val populatedModel = ResourceModel.builder()
             .arn(certificateAuthority.getArn())
+            .type(certificateAuthority.getType())
+            .keyAlgorithm(certificateAuthority.getCertificateAuthorityConfiguration().getKeyAlgorithm())
+            .signingAlgorithm(certificateAuthority.getCertificateAuthorityConfiguration().getSigningAlgorithm())
             .build();
 
-        if (certificateAuthorityFinishedCreation(certificateAuthority)) {
+        val status = certificateAuthority.getStatus();
+
+        if (certificateAuthorityFinishedCreation(certificateAuthority) && !Objects.equals(status, CertificateAuthorityStatus.DELETED.name())) {
             val csr = getCertificateAuthorityCsr(model);
             populatedModel.setCertificateSigningRequest(csr);
         }
@@ -205,6 +250,18 @@ public final class AcmPcaClient {
 
     @VisibleForTesting
     boolean isRevocationConfigurationEmpty(final ResourceModel model) {
+        val revocationConfiguration = model.getRevocationConfiguration();
+        return Objects.isNull(revocationConfiguration) || (Objects.isNull(revocationConfiguration.getCrlConfiguration()) && Objects.isNull(revocationConfiguration.getOcspConfiguration()));
+    }
+
+    @VisibleForTesting
+    boolean isOcspConfigurationEmpty(final ResourceModel model) {
+        val revocationConfiguration = model.getRevocationConfiguration();
+        return Objects.isNull(revocationConfiguration) || Objects.isNull(revocationConfiguration.getOcspConfiguration());
+    }
+
+    @VisibleForTesting
+    boolean isCrlConfigurationEmpty(final ResourceModel model) {
         val revocationConfiguration = model.getRevocationConfiguration();
         return Objects.isNull(revocationConfiguration) || Objects.isNull(revocationConfiguration.getCrlConfiguration());
     }

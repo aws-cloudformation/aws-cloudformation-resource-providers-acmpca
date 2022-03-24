@@ -1,9 +1,13 @@
 package software.amazon.acmpca.certificateauthority;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,6 +33,7 @@ import lombok.val;
 public final class ReadHandlerTest extends TestBase {
 
     @Test
+    @SuppressWarnings("unchecked")
     public void handleRequest__Success() {
         val handler = new ReadHandler();
 
@@ -62,11 +67,11 @@ public final class ReadHandlerTest extends TestBase {
 
         doReturn(new DescribeCertificateAuthorityResult()
             .withCertificateAuthority(certificateAuthority))
-            .when(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any());
+            .when(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any(Function.class));
 
         doReturn(new GetCertificateAuthorityCsrResult()
             .withCsr(csr))
-            .when(proxy).injectCredentialsAndInvoke(any(GetCertificateAuthorityCsrRequest.class), any());
+            .when(proxy).injectCredentialsAndInvoke(any(GetCertificateAuthorityCsrRequest.class), any(Function.class));
 
         val response = handler.handleRequest(proxy, request, null, log);
 
@@ -79,7 +84,55 @@ public final class ReadHandlerTest extends TestBase {
         assertThat(response.getErrorCode()).isNull();
         assertThat(response.getResourceModel().getCertificateSigningRequest()).isEqualTo(csr);
 
-        verify(proxy).injectCredentialsAndInvoke(any(GetCertificateAuthorityCsrRequest.class), any());
-        verify(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any());
+        verify(proxy).injectCredentialsAndInvoke(any(GetCertificateAuthorityCsrRequest.class), any(Function.class));
+        verify(proxy,times(2)).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any(Function.class));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void handleRequest__Success__DeletedCA() {
+        val handler = new ReadHandler();
+
+        val tags = ImmutableList.of(Tag.builder()
+            .key("key")
+            .value("value")
+            .build());
+
+        val model = ResourceModel.builder()
+            .arn(certificateAuthorityArn)
+            .signingAlgorithm(signingAlgorithm)
+            .keyAlgorithm(keyAlgorithm)
+            .revocationConfiguration(revocationConfiguration)
+            .tags(tags)
+            .certificateSigningRequest(csr)
+            .type(CertificateAuthorityType.ROOT.name())
+            .build();
+
+        val request = ResourceHandlerRequest.<ResourceModel>builder()
+            .desiredResourceState(model)
+            .build();
+
+        val certificateAuthority = new CertificateAuthority()
+            .withArn(certificateAuthorityArn)
+            .withType(CertificateAuthorityType.ROOT)
+            .withCertificateAuthorityConfiguration(new CertificateAuthorityConfiguration()
+                .withSubject(new ASN1Subject())
+                .withKeyAlgorithm(keyAlgorithm)
+                .withSigningAlgorithm(signingAlgorithm))
+            .withStatus(CertificateAuthorityStatus.DELETED);
+
+        doReturn(new DescribeCertificateAuthorityResult()
+            .withCertificateAuthority(certificateAuthority))
+            .when(proxy).injectCredentialsAndInvoke(any(DescribeCertificateAuthorityRequest.class), any(Function.class));
+
+        val response = handler.handleRequest(proxy, request, null, log);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(OperationStatus.FAILED);
+        assertThat(response.getCallbackContext()).isNull();
+        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
+        assertThat(response.getResourceModels()).isNull();
+        assertNotNull(response.getMessage());
+        assertNotNull(response.getErrorCode());
     }
 }

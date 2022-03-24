@@ -1,6 +1,6 @@
-## aws-cloudformation-resource-providers-acmpca
+## The CloudFormation Resource Provider Package For Amazon Certificate Manager Private Certificate Authority.
 
-The CloudFormation Resource Provider Package For Amazon Certificate Manager Private Certificate Authority.
+This repository contains AWS-owned resource providers for the `AWS::ACMPCA::*` namespace.
 
 CloudFormation Documentation: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/AWS_ACMPCA.html
 
@@ -38,18 +38,20 @@ to the region you want to use:
 # e.g. setting region to us-east-1
 $ export AWS_REGION="us-east-1"
 ```
-The certificate resource can be compiled from the `aws-acmpca-certificate`
-directory:
 
+Linting is done via [pre-commit](https://pre-commit.com/).
 
+```shell
+pre-commit install
 ```
-$ mvn compile
-```
 
-Unit tests can be run from the same directory:
+Manual options are available so you don't have to commit:
 
-```
-$ mvn test
+```shell
+# run all hooks on all files, mirrors what the CI runs
+pre-commit run --all-files
+# run unit tests and coverage checks
+mvn clean verify
 ```
 
 
