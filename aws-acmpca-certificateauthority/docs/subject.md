@@ -23,7 +23,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#givenname" title="GivenName">GivenName</a>" : <i>String</i>,
     "<a href="#initials" title="Initials">Initials</a>" : <i>String</i>,
     "<a href="#pseudonym" title="Pseudonym">Pseudonym</a>" : <i>String</i>,
-    "<a href="#generationqualifier" title="GenerationQualifier">GenerationQualifier</a>" : <i>String</i>
+    "<a href="#generationqualifier" title="GenerationQualifier">GenerationQualifier</a>" : <i>String</i>,
+    "<a href="#customattributes" title="CustomAttributes">CustomAttributes</a>" : <i>[ <a href="customattribute.md">CustomAttribute</a>, ... ]</i>
 }
 </pre>
 
@@ -44,6 +45,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#initials" title="Initials">Initials</a>: <i>String</i>
 <a href="#pseudonym" title="Pseudonym">Pseudonym</a>: <i>String</i>
 <a href="#generationqualifier" title="GenerationQualifier">GenerationQualifier</a>: <i>String</i>
+<a href="#customattributes" title="CustomAttributes">CustomAttributes</a>: <i>
+      - <a href="customattribute.md">CustomAttribute</a></i>
 </pre>
 
 ## Properties
@@ -157,5 +160,15 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 _Required_: No
 
 _Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### CustomAttributes
+
+Array of X.500 attribute type and value. CustomAttributes cannot be used along with pre-defined attributes.
+
+_Required_: No
+
+_Type_: List of <a href="customattribute.md">CustomAttribute</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)

@@ -2,6 +2,8 @@ package software.amazon.acmpca.certificateauthority;
 
 import static org.mockito.Mockito.mock;
 
+import java.util.List;
+
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
@@ -20,6 +22,41 @@ public abstract class TestBase {
     protected static final String keyStorageSecurityStandard = "keyStorageSecurityStandard";
 
     protected static final Subject subject = Subject.builder().build();
+    protected static final List<CustomAttribute> customAttributes = ImmutableList.of(
+        CustomAttribute.builder()
+            .objectIdentifier("1.2.3.4")
+            .value("value1")
+            .build(),
+        CustomAttribute.builder()
+            .objectIdentifier("1.3.4.5")
+            .value("value2")
+            .build()
+        );
+    protected static final Subject customAttributesSubject = Subject.builder()
+        .customAttributes(customAttributes)
+        .build();
+    protected static final CsrExtensions csrExtensionsWithCustomAttributes = CsrExtensions.builder()
+        .keyUsage(KeyUsage.builder()
+                .digitalSignature(true)
+                .build())
+        .subjectInformationAccess(ImmutableList.of(
+                AccessDescription.builder()
+                        .accessMethod(AccessMethod.builder()
+                                .accessMethodType("CA_REPOSITORY")
+                                .build())
+                        .accessLocation(GeneralName.builder()
+                                .uniformResourceIdentifier("fakeURI-CA_REPOSITORY")
+                                .build())
+                        .build(),
+                AccessDescription.builder()
+                        .accessMethod(AccessMethod.builder()
+                                .customObjectIdentifier("1.3.5.6")
+                                .build())
+                        .accessLocation(GeneralName.builder()
+                                .directoryName(customAttributesSubject)
+                                .build())
+                        .build()))
+        .build();
     protected static final CsrExtensions emptyCsrExtensions = CsrExtensions.builder()
             .build();
     protected static final CsrExtensions csrExtensions = CsrExtensions.builder()
