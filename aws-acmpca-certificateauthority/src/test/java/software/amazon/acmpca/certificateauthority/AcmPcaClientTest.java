@@ -32,6 +32,7 @@ import com.amazonaws.services.acmpca.model.CertificateAuthorityType;
 import com.amazonaws.services.acmpca.model.CreateCertificateAuthorityRequest;
 import com.amazonaws.services.acmpca.model.CreateCertificateAuthorityResult;
 import com.amazonaws.services.acmpca.model.CsrExtensions;
+import com.amazonaws.services.acmpca.model.CustomAttribute;
 import com.amazonaws.services.acmpca.model.DescribeCertificateAuthorityRequest;
 import com.amazonaws.services.acmpca.model.DescribeCertificateAuthorityResult;
 import com.amazonaws.services.acmpca.model.GeneralName;
@@ -556,6 +557,55 @@ public final class AcmPcaClientTest extends TestBase {
             .withStatus(CertificateAuthorityStatus.CREATING);
 
         assertThat(acmPcaClient.certificateAuthorityFinishedCreation(certificateAuthority)).isFalse();
+    }
+
+    @Test
+    public void testMapSubject__CustomAttributes() {
+        val result = AcmPcaClient.getMapper().map(customAttributesSubject, ASN1Subject.class);
+        val expectedSubject = new ASN1Subject()
+            .withCustomAttributes(ImmutableList.of(
+                new CustomAttribute()
+                    .withObjectIdentifier("1.2.3.4")
+                    .withValue("value1"),
+                new CustomAttribute()
+                    .withObjectIdentifier("1.3.4.5")
+                    .withValue("value2")
+            ));
+
+        assertNotNull(result);
+        assertNotNull(result.getCustomAttributes());
+        assertEquals(2, result.getCustomAttributes().size());
+        assertEquals(expectedSubject.toString(), result.toString());
+    }
+
+    @Test
+    public void testMapCsrExtensions__CustomAttributes() {
+        val result = AcmPcaClient.getMapper().map(csrExtensionsWithCustomAttributes, com.amazonaws.services.acmpca.model.CsrExtensions.class);
+        val expectedCustomAttributes = ImmutableList.of(
+            new CustomAttribute()
+                .withObjectIdentifier("1.2.3.4")
+                .withValue("value1"),
+            new CustomAttribute()
+                .withObjectIdentifier("1.3.4.5")
+                .withValue("value2"));
+
+        val expectedCSRExtensions = new CsrExtensions()
+            .withKeyUsage(new KeyUsage()
+                    .withDigitalSignature(true))
+            .withSubjectInformationAccess(new ImmutableList.Builder<AccessDescription>()
+                    .add(new AccessDescription()
+                            .withAccessMethod(new AccessMethod().withAccessMethodType(AccessMethodType.CA_REPOSITORY))
+                            .withAccessLocation(new GeneralName().withUniformResourceIdentifier("fakeURI-CA_REPOSITORY")))
+                    .add(new AccessDescription()
+                            .withAccessMethod(new AccessMethod().withCustomObjectIdentifier("1.3.5.6"))
+                            .withAccessLocation(new GeneralName().withDirectoryName(new ASN1Subject().withCustomAttributes(expectedCustomAttributes))))
+                    .build());
+
+        assertNotNull(result);
+        assertNotNull(result.getKeyUsage());
+        assertNotNull(result.getSubjectInformationAccess());
+        assertEquals(2, result.getSubjectInformationAccess().size());
+        assertEquals(expectedCSRExtensions.toString(), result.toString());
     }
 
     @Test

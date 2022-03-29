@@ -8,6 +8,7 @@ import java.util.UUID;
 import com.amazonaws.services.acmpca.AWSACMPCA;
 import com.amazonaws.services.acmpca.AWSACMPCAClientBuilder;
 import com.amazonaws.services.acmpca.model.ApiPassthrough;
+import com.amazonaws.services.acmpca.model.ASN1Subject;
 import com.amazonaws.services.acmpca.model.GetCertificateRequest;
 import com.amazonaws.services.acmpca.model.GetCertificateResult;
 import com.amazonaws.services.acmpca.model.IssueCertificateRequest;
@@ -44,11 +45,16 @@ public final class AcmPcaClient {
         val csrExtensionBeanMappingBuilder = new BeanMappingBuilder() {
             @Override
             protected void configure() {
+                mapping(type(Subject.class).accessible(true),
+                    type(ASN1Subject.class).accessible(true))
+                    .fields("customAttributes", "customAttributes");
+
                 mapping(type(Extensions.class).accessible(true),
                     type(com.amazonaws.services.acmpca.model.Extensions.class).accessible(true))
                     .fields("certificatePolicies", "certificatePolicies")
                     .fields("extendedKeyUsage", "extendedKeyUsage")
-                    .fields("subjectAlternativeNames", "subjectAlternativeNames");
+                    .fields("subjectAlternativeNames", "subjectAlternativeNames")
+                    .fields("customExtensions", "customExtensions");
 
                 mapping(type(PolicyInformation.class).accessible(true),
                     type(com.amazonaws.services.acmpca.model.PolicyInformation.class).accessible(true))

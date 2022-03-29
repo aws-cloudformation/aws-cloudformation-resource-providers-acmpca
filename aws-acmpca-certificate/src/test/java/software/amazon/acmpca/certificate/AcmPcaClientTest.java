@@ -149,11 +149,29 @@ public class AcmPcaClientTest extends TestBase {
                 .build()
         );
 
+        val customExtensions = Arrays.asList(
+            CustomExtension.builder()
+                .objectIdentifier("1.3.4.5")
+                .value("YCMF")
+                .critical(true)
+                .build(),
+            CustomExtension.builder()
+                .objectIdentifier("1.3.4.6")
+                .value("YCMD")
+                .build(),
+            CustomExtension.builder()
+                .objectIdentifier("1.3.4.7")
+                .value("YCME")
+                .critical(false)
+                .build()
+        );
+
         val extensions = Extensions.builder()
             .keyUsage(keyUsage)
             .extendedKeyUsage(extendedKeyUsageList)
             .certificatePolicies(certificatePolicies)
             .subjectAlternativeNames(subjectAlternativeNames)
+            .customExtensions(customExtensions)
             .build();
 
         val apiPassthrough = ApiPassthrough.builder()
@@ -220,6 +238,20 @@ public class AcmPcaClientTest extends TestBase {
                 .withOtherName(new com.amazonaws.services.acmpca.model.OtherName()
                     .withTypeId("typeId")
                     .withValue("value"))
+        ));
+
+        assertThat(sdkExtensions.getCustomExtensions()).isEqualTo(Arrays.asList(
+            new com.amazonaws.services.acmpca.model.CustomExtension()
+                .withObjectIdentifier("1.3.4.5")
+                .withValue("YCMF")
+                .withCritical(true),
+            new com.amazonaws.services.acmpca.model.CustomExtension()
+                .withObjectIdentifier("1.3.4.6")
+                .withValue("YCMD"),
+            new com.amazonaws.services.acmpca.model.CustomExtension()
+                .withObjectIdentifier("1.3.4.7")
+                .withValue("YCME")
+                .withCritical(false)
         ));
     }
 
@@ -303,5 +335,115 @@ public class AcmPcaClientTest extends TestBase {
                 .withCountry("US")
                 .withState("VA")
         );
+    }
+
+    @Test
+    public void testCreateIssueCertificateRequest__ApiPassthrough__Subject__CustomAttributes() {
+        val acmPcaClient = new AcmPcaClient(proxy);
+
+        val subject = Subject.builder()
+            .customAttributes(Arrays.asList(
+                CustomAttribute.builder()
+                    .objectIdentifier("1.2.3.4")
+                    .value("value1")
+                    .build(),
+                CustomAttribute.builder()
+                    .objectIdentifier("1.2.3.4")
+                    .value("value2")
+                    .build()))
+            .build();
+
+        val apiPassthrough = ApiPassthrough.builder()
+            .subject(subject)
+            .build();
+
+        val model = ResourceModel.builder()
+            .apiPassthrough(apiPassthrough)
+            .certificateAuthorityArn(certificateAuthorityArn)
+            .certificateSigningRequest(csr)
+            .signingAlgorithm(signingAlgorithm)
+            .validity(validity)
+            .build();
+
+        val issueCertificateRequest = acmPcaClient.createIssueCertificateRequest(model);
+
+        assertThat(issueCertificateRequest.getApiPassthrough().getSubject()).isEqualTo(
+            new com.amazonaws.services.acmpca.model.ASN1Subject()
+                .withCustomAttributes(Arrays.asList(
+                    new com.amazonaws.services.acmpca.model.CustomAttribute()
+                        .withObjectIdentifier("1.2.3.4")
+                        .withValue("value1"),
+                    new com.amazonaws.services.acmpca.model.CustomAttribute()
+                        .withObjectIdentifier("1.2.3.4")
+                        .withValue("value2")))
+        );
+    }
+
+    @Test
+    public void testCreateIssueCertificateRequest__ApiPassthrough__SAN__CustomAttributes() {
+        val acmPcaClient = new AcmPcaClient(proxy);
+
+        val subject = Subject.builder()
+            .customAttributes(Arrays.asList(
+                CustomAttribute.builder()
+                    .objectIdentifier("1.2.3.4")
+                    .value("value1")
+                    .build(),
+                CustomAttribute.builder()
+                    .objectIdentifier("1.2.3.4")
+                    .value("value2")
+                    .build()))
+            .build();
+
+        val subjectAlternativeNames = Arrays.asList(
+            GeneralName.builder()
+                .directoryName(subject)
+                .ediPartyName(EdiPartyName.builder()
+                    .partyName("partyName")
+                    .nameAssigner("nameAssigner")
+                    .build())
+                .otherName(OtherName.builder()
+                    .typeId("typeId")
+                    .value("value")
+                    .build())
+                .build()
+        );
+
+        val extensions = Extensions.builder()
+            .subjectAlternativeNames(subjectAlternativeNames)
+            .build();
+
+        val apiPassthrough = ApiPassthrough.builder()
+            .extensions(extensions)
+            .build();
+
+        val model = ResourceModel.builder()
+            .apiPassthrough(apiPassthrough)
+            .certificateAuthorityArn(certificateAuthorityArn)
+            .certificateSigningRequest(csr)
+            .signingAlgorithm(signingAlgorithm)
+            .validity(validity)
+            .build();
+
+        val issueCertificateRequest = acmPcaClient.createIssueCertificateRequest(model);
+        val sdkExtensions = issueCertificateRequest.getApiPassthrough().getExtensions();
+
+        assertThat(sdkExtensions.getSubjectAlternativeNames()).isEqualTo(Arrays.asList(
+            new com.amazonaws.services.acmpca.model.GeneralName()
+                .withDirectoryName(new com.amazonaws.services.acmpca.model.ASN1Subject()
+                    .withCustomAttributes(Arrays.asList(
+                        new com.amazonaws.services.acmpca.model.CustomAttribute()
+                            .withObjectIdentifier("1.2.3.4")
+                            .withValue("value1"),
+                        new com.amazonaws.services.acmpca.model.CustomAttribute()
+                            .withObjectIdentifier("1.2.3.4")
+                            .withValue("value2"))))
+                .withEdiPartyName(new com.amazonaws.services.acmpca.model.EdiPartyName()
+                    .withPartyName("partyName")
+                    .withNameAssigner("nameAssigner"))
+                .withOtherName(new com.amazonaws.services.acmpca.model.OtherName()
+                    .withTypeId("typeId")
+                    .withValue("value"))
+        ));
     }
 }

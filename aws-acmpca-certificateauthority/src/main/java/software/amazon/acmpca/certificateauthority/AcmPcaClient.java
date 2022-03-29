@@ -54,6 +54,10 @@ public final class AcmPcaClient {
         val csrExtensionBeanMappingBuilder = new BeanMappingBuilder() {
             @Override
             protected void configure() {
+                mapping(type(Subject.class).accessible(true),
+                    type(ASN1Subject.class).accessible(true))
+                    .fields("customAttributes", "customAttributes");
+
                 mapping(type(CsrExtensions.class).accessible(true),
                         type(com.amazonaws.services.acmpca.model.CsrExtensions.class).accessible())
                         .fields("keyUsage", "keyUsage")
