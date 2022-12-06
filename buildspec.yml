@@ -7,6 +7,7 @@ phases:
     commands:
       -  pip install --upgrade 'pyyaml~=5.1'
       -  pip install --upgrade 'six~=1.15.0'
+      -  pip install --upgrade requests
       -  pip install pre-commit cloudformation-cli-java-plugin
   build:
     commands:
