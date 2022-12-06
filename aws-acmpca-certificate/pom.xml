@@ -121,6 +121,7 @@
                 <version>1.6.0</version>
                 <executions>
                     <execution>
+                        <?m2e execute onConfiguration?>
                         <id>generate</id>
                         <phase>generate-sources</phase>
                         <goals>
