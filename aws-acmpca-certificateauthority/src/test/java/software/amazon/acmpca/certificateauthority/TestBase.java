@@ -20,6 +20,7 @@ public abstract class TestBase {
     protected static final String keyAlgorithm = "keyAlgorithm";
     protected static final String signingAlgorithm = "signingAlgorithm";
     protected static final String keyStorageSecurityStandard = "keyStorageSecurityStandard";
+    protected static final String usageMode = "usageMode";
 
     protected static final Subject subject = Subject.builder().build();
     protected static final List<CustomAttribute> customAttributes = ImmutableList.of(

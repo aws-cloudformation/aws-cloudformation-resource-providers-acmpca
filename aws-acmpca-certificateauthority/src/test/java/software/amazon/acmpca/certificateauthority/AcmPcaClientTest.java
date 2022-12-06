@@ -71,6 +71,7 @@ public final class AcmPcaClientTest extends TestBase {
             .subject(subject)
             .signingAlgorithm(signingAlgorithm)
             .keyAlgorithm(keyAlgorithm)
+            .usageMode(usageMode)
             .revocationConfiguration(revocationConfiguration)
             .keyStorageSecurityStandard(keyStorageSecurityStandard)
             .tags(tags)
@@ -193,6 +194,59 @@ public final class AcmPcaClientTest extends TestBase {
             .keyAlgorithm(keyAlgorithm)
             .revocationConfiguration(revocationConfiguration)
             .keyStorageSecurityStandard(keyStorageSecurityStandard)
+            .build();
+
+        doReturn(new CreateCertificateAuthorityResult()
+            .withCertificateAuthorityArn(certificateAuthorityArn))
+            .when(proxy).injectCredentialsAndInvoke(any(CreateCertificateAuthorityRequest.class), any(Function.class));
+
+        assertThat(acmPcaClient.createCertificateAuthority(model)).isEqualTo(certificateAuthorityArn);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void createCertificateAuthority__WithoutUsageMode() {
+        val acmPcaClient = new AcmPcaClient(proxy);
+
+        val tags = ImmutableList.of(Tag.builder()
+            .key("key")
+            .value("value")
+            .build());
+
+        val model = ResourceModel.builder()
+            .subject(subject)
+            .signingAlgorithm(signingAlgorithm)
+            .keyAlgorithm(keyAlgorithm)
+            .revocationConfiguration(revocationConfiguration)
+            .keyStorageSecurityStandard(keyStorageSecurityStandard)
+            .tags(tags)
+            .build();
+
+        doReturn(new CreateCertificateAuthorityResult()
+            .withCertificateAuthorityArn(certificateAuthorityArn))
+            .when(proxy).injectCredentialsAndInvoke(any(CreateCertificateAuthorityRequest.class), any(Function.class));
+
+        assertThat(acmPcaClient.createCertificateAuthority(model)).isEqualTo(certificateAuthorityArn);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void createCertificateAuthority__WithUsageMode() {
+        val acmPcaClient = new AcmPcaClient(proxy);
+
+        val tags = ImmutableList.of(Tag.builder()
+            .key("key")
+            .value("value")
+            .build());
+
+        val model = ResourceModel.builder()
+            .subject(subject)
+            .signingAlgorithm(signingAlgorithm)
+            .keyAlgorithm(keyAlgorithm)
+            .usageMode(usageMode)
+            .revocationConfiguration(revocationConfiguration)
+            .keyStorageSecurityStandard(keyStorageSecurityStandard)
+            .tags(tags)
             .build();
 
         doReturn(new CreateCertificateAuthorityResult()
