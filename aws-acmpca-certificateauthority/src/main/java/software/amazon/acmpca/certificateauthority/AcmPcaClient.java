@@ -86,6 +86,8 @@ public final class AcmPcaClient {
             certificateAuthorityConfiguration.setCsrExtensions(csrExtensions);
         }
 
+        val usageMode = model.getUsageMode();
+
         val createRequest = new CreateCertificateAuthorityRequest()
             .withCertificateAuthorityType(model.getType())
             .withCertificateAuthorityConfiguration(certificateAuthorityConfiguration)
@@ -99,6 +101,10 @@ public final class AcmPcaClient {
 
         if (!tags.isEmpty()) {
             createRequest.setTags(tags);
+        }
+
+        if (Objects.nonNull(usageMode)) {
+            createRequest.setUsageMode(usageMode);
         }
 
         return clientProxy.injectCredentialsAndInvoke(createRequest, pcaClient::createCertificateAuthority)
@@ -226,6 +232,7 @@ public final class AcmPcaClient {
         val populatedModel = ResourceModel.builder()
             .arn(certificateAuthority.getArn())
             .type(certificateAuthority.getType())
+            .usageMode(certificateAuthority.getUsageMode())
             .keyAlgorithm(certificateAuthority.getCertificateAuthorityConfiguration().getKeyAlgorithm())
             .signingAlgorithm(certificateAuthority.getCertificateAuthorityConfiguration().getSigningAlgorithm())
             .build();

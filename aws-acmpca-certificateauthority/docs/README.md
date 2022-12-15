@@ -19,7 +19,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#revocationconfiguration" title="RevocationConfiguration">RevocationConfiguration</a>" : <i><a href="revocationconfiguration.md">RevocationConfiguration</a></i>,
         "<a href="#tags" title="Tags">Tags</a>" : <i>[ <a href="tag.md">Tag</a>, ... ]</i>,
         "<a href="#csrextensions" title="CsrExtensions">CsrExtensions</a>" : <i><a href="csrextensions.md">CsrExtensions</a></i>,
-        "<a href="#keystoragesecuritystandard" title="KeyStorageSecurityStandard">KeyStorageSecurityStandard</a>" : <i>String</i>
+        "<a href="#keystoragesecuritystandard" title="KeyStorageSecurityStandard">KeyStorageSecurityStandard</a>" : <i>String</i>,
+        "<a href="#usagemode" title="UsageMode">UsageMode</a>" : <i>String</i>
     }
 }
 </pre>
@@ -38,6 +39,7 @@ Properties:
       - <a href="tag.md">Tag</a></i>
     <a href="#csrextensions" title="CsrExtensions">CsrExtensions</a>: <i><a href="csrextensions.md">CsrExtensions</a></i>
     <a href="#keystoragesecuritystandard" title="KeyStorageSecurityStandard">KeyStorageSecurityStandard</a>: <i>String</i>
+    <a href="#usagemode" title="UsageMode">UsageMode</a>: <i>String</i>
 </pre>
 
 ## Properties
@@ -113,6 +115,16 @@ _Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/l
 #### KeyStorageSecurityStandard
 
 KeyStorageSecurityStadard defines a cryptographic key management compliance standard used for handling CA keys.
+
+_Required_: No
+
+_Type_: String
+
+_Update requires_: [Replacement](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-replacement)
+
+#### UsageMode
+
+Usage mode of the ceritificate authority.
 
 _Required_: No
 
