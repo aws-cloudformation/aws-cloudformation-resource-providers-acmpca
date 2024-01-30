@@ -94,6 +94,19 @@
         "Value"
       ]
     },
+    "CrlDistributionPointExtensionConfiguration": {
+      "description": "Configures the default behavior of the CRL Distribution Point extension for certificates issued by your certificate authority",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "OmitExtension": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "OmitExtension"
+      ]
+    },
     "CrlConfiguration": {
       "description": "Your certificate authority can create and maintain a certificate revocation list (CRL). A CRL contains information about certificates that have been revoked.",
       "type": "object",
@@ -113,6 +126,9 @@
         },
         "S3ObjectAcl": {
           "type": "string"
+        },
+        "CrlDistributionPointExtensionConfiguration": {
+          "$ref": "#/definitions/CrlDistributionPointExtensionConfiguration"
         }
       }
     },
