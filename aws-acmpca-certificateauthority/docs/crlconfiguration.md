@@ -14,7 +14,8 @@ To declare this entity in your AWS CloudFormation template, use the following sy
     "<a href="#expirationindays" title="ExpirationInDays">ExpirationInDays</a>" : <i>Integer</i>,
     "<a href="#customcname" title="CustomCname">CustomCname</a>" : <i>String</i>,
     "<a href="#s3bucketname" title="S3BucketName">S3BucketName</a>" : <i>String</i>,
-    "<a href="#s3objectacl" title="S3ObjectAcl">S3ObjectAcl</a>" : <i>String</i>
+    "<a href="#s3objectacl" title="S3ObjectAcl">S3ObjectAcl</a>" : <i>String</i>,
+    "<a href="#crldistributionpointextensionconfiguration" title="CrlDistributionPointExtensionConfiguration">CrlDistributionPointExtensionConfiguration</a>" : <i><a href="crldistributionpointextensionconfiguration.md">CrlDistributionPointExtensionConfiguration</a></i>
 }
 </pre>
 
@@ -26,6 +27,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
 <a href="#customcname" title="CustomCname">CustomCname</a>: <i>String</i>
 <a href="#s3bucketname" title="S3BucketName">S3BucketName</a>: <i>String</i>
 <a href="#s3objectacl" title="S3ObjectAcl">S3ObjectAcl</a>: <i>String</i>
+<a href="#crldistributionpointextensionconfiguration" title="CrlDistributionPointExtensionConfiguration">CrlDistributionPointExtensionConfiguration</a>: <i><a href="crldistributionpointextensionconfiguration.md">CrlDistributionPointExtensionConfiguration</a></i>
 </pre>
 
 ## Properties
@@ -67,5 +69,15 @@ _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormati
 _Required_: No
 
 _Type_: String
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### CrlDistributionPointExtensionConfiguration
+
+Configures the default behavior of the CRL Distribution Point extension for certificates issued by your certificate authority
+
+_Required_: No
+
+_Type_: <a href="crldistributionpointextensionconfiguration.md">CrlDistributionPointExtensionConfiguration</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)

@@ -90,6 +90,9 @@ public abstract class TestBase {
             .expirationInDays(1)
             .customCname("cname")
             .s3BucketName("s3bucket")
+            .crlDistributionPointExtensionConfiguration(CrlDistributionPointExtensionConfiguration.builder()
+                .omitExtension(false)
+                .build())
             .build())
         .build();
 

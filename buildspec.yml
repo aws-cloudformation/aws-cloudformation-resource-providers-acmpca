@@ -5,11 +5,13 @@ phases:
         java: openjdk8
         python: 3.7
     commands:
+      - pip install --upgrade pip
       - pip install --upgrade 'six==1.15.0'
-      - pip install --upgrade 'boto3==1.24.4'
+      - pip install --upgrade 'boto3==1.33.13'
       - pip install --upgrade 'urllib3==1.26.9'
-      - pip install --upgrade 'botocore==1.27.4'
-      - pip install --upgrade 'pyyaml==5.4.1'
+      - pip install --upgrade 'awscli==1.31.13'
+      - pip install --upgrade 'botocore==1.33.13'
+      - pip install --upgrade 'pyyaml==6.0.1'
       - pip install --upgrade 'requests==2.27.1'
       - pip install pre-commit cloudformation-cli-java-plugin
   build:
